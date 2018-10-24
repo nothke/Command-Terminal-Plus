@@ -94,21 +94,24 @@ namespace CommandTerminalPlus
 
         private CursorLockMode PreviousCursorLockState;
         private bool PreviousCursorVisible;
-        private void DealWithCursor(bool terminalClosing)
+
+        private void OnTerminalOpen()
         {
-            if (terminalClosing)
-            {
-                Cursor.lockState = PreviousCursorLockState;
-                Cursor.visible = PreviousCursorVisible;
-            }
-            else
-            {
-                PreviousCursorLockState = Cursor.lockState;
-                PreviousCursorVisible = Cursor.visible;
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
+            PreviousCursorLockState = Cursor.lockState;
+            PreviousCursorVisible = Cursor.visible;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            WhenTerminalOpens.Invoke();
         }
+        private void OnTerminalClose()
+        {
+            Cursor.lockState = PreviousCursorLockState;
+            Cursor.visible = PreviousCursorVisible;
+            WhenTerminalCloses.Invoke();
+        }
+
+        public static event System.Action WhenTerminalOpens;
+        public static event System.Action WhenTerminalCloses;
 
 
         public void SetState(TerminalState new_state) {
@@ -119,7 +122,7 @@ namespace CommandTerminalPlus
             switch (new_state) {
                 case TerminalState.Close: {
                     open_target = 0;
-                    DealWithCursor(true);
+                    OnTerminalClose();
                     break;
                 }
                 case TerminalState.OpenSmall: {
@@ -129,19 +132,19 @@ namespace CommandTerminalPlus
                         // is greater than OpenSmall's target
                         open_target = 0;
                         state = TerminalState.Close;
-                        DealWithCursor(true);
+                        OnTerminalClose();
                         return;
                     }
                     real_window_size = open_target;
                     scroll_position.y = int.MaxValue;
-                    DealWithCursor(false);
+                    OnTerminalOpen();
                     break;
                 }
                 case TerminalState.OpenFull:
                 default: {
                     real_window_size = Screen.height * MaxHeight;
                     open_target = real_window_size;
-                    DealWithCursor(false);
+                    OnTerminalOpen();
                     break;
                 }
             }
