@@ -91,7 +91,7 @@ namespace CommandTerminal
     public class CommandShell
     {
         Dictionary<string, CommandInfo> commands = new Dictionary<string, CommandInfo>();
-        Dictionary<string, CommandArg> variables = new Dictionary<string, CommandArg>();
+        Dictionary<string, PropertyInfo> variables = new Dictionary<string, PropertyInfo>();
         List<CommandArg> arguments = new List<CommandArg>(); // Cache for performance
 
         public string IssuedErrorMessage { get; private set; }
@@ -100,17 +100,18 @@ namespace CommandTerminal
             get { return commands; }
         }
 
-        public Dictionary<string, CommandArg> Variables {
-            get { return variables; }
+        public List<string> Variables {
+            get { return new List<string>(variables.Keys); }
         }
 
         /// <summary>
-        /// Uses reflection to find all RegisterCommand attributes
+        /// Uses reflection to find all RegisterCommand and RegisterVariable attributes
         /// and adds them to the commands dictionary.
         /// </summary>
-        public void RegisterCommands() {
+        public void RegisterCommandsAndVariables() {
             var rejected_commands = new Dictionary<string, CommandInfo>();
             var method_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            var property_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
             foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
                 foreach (var method in type.GetMethods(method_flags)) {
@@ -151,6 +152,17 @@ namespace CommandTerminal
                     proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
                     AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Hint);
                 }
+
+                foreach(var property in type.GetProperties(property_flags)) {
+                    var attribute = Attribute.GetCustomAttribute(
+                        property, typeof(RegisterVariableAttribute)) as RegisterVariableAttribute;
+
+                    if (attribute == null) continue;
+
+                    string command_name = attribute.Name ?? property.Name;
+
+                    AddVariable(command_name, property);
+                }
             }
             HandleRejectedCommands(rejected_commands);
         }
@@ -167,14 +179,8 @@ namespace CommandTerminal
                 var argument = EatArgument(ref remaining);
 
                 if (argument.String != "") {
-                    if (argument.String[0] == '$') {
-                        string variable_name = argument.String.Substring(1).ToUpper();
+                    string variable_name = argument.String.Substring(1).ToUpper();
 
-                        if (variables.ContainsKey(variable_name)) {
-                            // Replace variable argument if it's defined
-                            argument = variables[variable_name];
-                        }
-                    }
                     arguments.Add(argument);
                 }
             }
@@ -262,29 +268,52 @@ namespace CommandTerminal
             AddCommand(name, info);
         }
 
+        public void AddVariable(string name, PropertyInfo info)
+        {
+            name = name.ToUpper();
+
+            if (variables.ContainsKey(name))
+                throw new Exception($"there is already a variable called {name}");
+
+            variables.Add(name, info);
+        }
+
         public void SetVariable(string name, string value) {
             SetVariable(name, new CommandArg() { String = value });
         }
 
-        public void SetVariable(string name, CommandArg value) {
+        public void SetVariable(string name, CommandArg arg) {
             name = name.ToUpper();
 
-            if (variables.ContainsKey(name)) {
-                variables[name] = value;
-            } else {
-                variables.Add(name, value);
-            }
+            if (!variables.ContainsKey(name))
+                throw new Exception($"no variable registered with name {name}");
+
+            object value = null;
+
+            var propertyType = variables[name].PropertyType;
+
+
+            if (propertyType == typeof(string))
+                value = arg.String;
+            else if (propertyType == typeof(int))
+                value = arg.Int;
+            else if (propertyType == typeof(float))
+                value = arg.Float;
+            else if (propertyType == typeof(bool))
+                value = arg.Bool;
+            else if (propertyType.IsEnum)
+                value = Enum.Parse(propertyType, arg.String);
+
+            variables[name].SetMethod.Invoke(null, new object[] { value });
         }
 
-        public CommandArg GetVariable(string name) {
+        public object GetVariable(string name) {
             name = name.ToUpper();
 
-            if (variables.ContainsKey(name)) {
-                return variables[name];
-            }
+            if (!variables.ContainsKey(name))
+                throw new Exception($"no variable registered with name {name}");
 
-            IssueErrorMessage("No variable named {0}", name);
-            return new CommandArg();
+            return variables[name].GetMethod.Invoke(null, null);
         }
 
         public void IssueErrorMessage(string format, params object[] message) {

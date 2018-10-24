@@ -164,7 +164,7 @@ namespace CommandTerminal
             SetupInput();
             SetupLabels();
 
-            Shell.RegisterCommands();
+            Shell.RegisterCommandsAndVariables();
 
             if (IssuedError) {
                 Log(TerminalLogType.Error, "Error: {0}", Shell.IssuedErrorMessage);

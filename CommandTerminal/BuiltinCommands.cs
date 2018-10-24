@@ -78,17 +78,13 @@ namespace CommandTerminal
         [RegisterCommand(Help = "List all variables or set a variable value")]
         static void CommandSet(CommandArg[] args) {
             if (args.Length == 0) {
-                foreach (var kv in Terminal.Shell.Variables) {
-                    Terminal.Log("{0}: {1}", kv.Key.PadRight(16), kv.Value);
+                foreach (var v in Terminal.Shell.Variables) {
+                    Terminal.Log("{0}: {1}", v.PadRight(16), Terminal.Shell.GetVariable(v));
                 }
                 return;
             }
 
             string variable_name = args[0].String;
-
-            if (variable_name[0] == '$') {
-                Terminal.Log(TerminalLogType.Warning, "Warning: Variable name starts with '$', '${0}'.", variable_name);
-            }
 
             Terminal.Shell.SetVariable(variable_name, JoinArguments(args, 1));
         }
