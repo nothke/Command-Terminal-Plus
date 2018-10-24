@@ -92,6 +92,25 @@ namespace CommandTerminalPlus
             Buffer.HandleLog(string.Format(format, message), type);
         }
 
+        private CursorLockMode PreviousCursorLockState;
+        private bool PreviousCursorVisible;
+        private void DealWithCursor(bool terminalClosing)
+        {
+            if (terminalClosing)
+            {
+                Cursor.lockState = PreviousCursorLockState;
+                Cursor.visible = PreviousCursorVisible;
+            }
+            else
+            {
+                PreviousCursorLockState = Cursor.lockState;
+                PreviousCursorVisible = Cursor.visible;
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+            }
+        }
+
+
         public void SetState(TerminalState new_state) {
             input_fix = true;
             cached_command_text = command_text;
@@ -100,6 +119,7 @@ namespace CommandTerminalPlus
             switch (new_state) {
                 case TerminalState.Close: {
                     open_target = 0;
+                    DealWithCursor(true);
                     break;
                 }
                 case TerminalState.OpenSmall: {
@@ -109,16 +129,19 @@ namespace CommandTerminalPlus
                         // is greater than OpenSmall's target
                         open_target = 0;
                         state = TerminalState.Close;
+                        DealWithCursor(true);
                         return;
                     }
                     real_window_size = open_target;
                     scroll_position.y = int.MaxValue;
+                    DealWithCursor(false);
                     break;
                 }
                 case TerminalState.OpenFull:
                 default: {
                     real_window_size = Screen.height * MaxHeight;
                     open_target = real_window_size;
+                    DealWithCursor(false);
                     break;
                 }
             }
