@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Text;
 using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using UnityEngine.Assertions;
 
@@ -444,6 +445,27 @@ namespace CommandTerminal
                 for (int i = 0; i < commands.Length; i++)
                     Shell.RunCommand(commands[i]);
             }
+        }
+
+        private static Terminal Instance;
+        private void Awake()
+        {
+            Instance = this;
+        }
+
+        private static IEnumerator RunCommandAfterDelayRoutine(float seconds, string command, bool scaledTime)
+        {
+            if (scaledTime)
+                yield return new WaitForSeconds(seconds);
+            else
+                yield return new WaitForSecondsRealtime(seconds);
+
+            Shell.RunCommand(command);
+        }
+
+        public static void RunCommandAfterDelay(float seconds, string command, bool scaledTime)
+        {
+            Instance.StartCoroutine(RunCommandAfterDelayRoutine(seconds, command, scaledTime));
         }
     }
 }

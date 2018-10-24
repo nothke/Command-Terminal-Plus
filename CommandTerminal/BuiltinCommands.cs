@@ -50,6 +50,18 @@ namespace CommandTerminal
             Terminal.Log("Time: {0}ms", (double)sw.ElapsedTicks / 10000);
         }
 
+        [RegisterCommand(Help = "Schedule a command to be executed some time in the future", MinArgCount = 2)]
+        static void CommandSchedule(CommandArg[] args)
+        {
+            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: true);
+        }
+
+        [RegisterCommand(Help = "Schedule a command ignoring time scale", MinArgCount = 2)]
+        static void CommandScheduleUnscaled(CommandArg[] args)
+        {
+            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: false);
+        }
+
         [RegisterCommand(Help = "Output message")]
         static void CommandPrint(CommandArg[] args) {
             Terminal.Log(JoinArguments(args));
