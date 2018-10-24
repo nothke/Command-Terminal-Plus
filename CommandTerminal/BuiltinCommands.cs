@@ -3,7 +3,7 @@ using System.Text;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace CommandTerminal
+namespace CommandTerminalPlus
 {
     public static class BuiltinCommands
     {

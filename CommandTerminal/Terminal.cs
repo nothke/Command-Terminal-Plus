@@ -5,7 +5,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine.Assertions;
 
-namespace CommandTerminal
+namespace CommandTerminalPlus
 {
     public enum TerminalState
     {

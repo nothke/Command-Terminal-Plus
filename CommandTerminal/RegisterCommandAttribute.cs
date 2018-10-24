@@ -1,7 +1,7 @@
 using System;
 using System.Reflection;
 
-namespace CommandTerminal
+namespace CommandTerminalPlus
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class RegisterCommandAttribute : Attribute
