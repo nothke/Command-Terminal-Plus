@@ -171,6 +171,10 @@ namespace CommandTerminalPlus
         /// Parses an input line into a command and runs that command.
         /// </summary>
         public void RunCommand(string line) {
+            Terminal.Log(TerminalLogType.Input, "{0}", line);
+            Terminal.History.Push(line);
+            Terminal.BottomOutScrollbar();
+
             string remaining = line;
             IssuedErrorMessage = null;
             arguments.Clear();
@@ -201,7 +205,7 @@ namespace CommandTerminalPlus
             RunCommand(command_name, arguments.ToArray());
         }
 
-        public void RunCommand(string command_name, CommandArg[] arguments) {
+        private void RunCommand(string command_name, CommandArg[] arguments) {
             var command = commands[command_name];
             int arg_count = arguments.Length;
             string error_message = null;

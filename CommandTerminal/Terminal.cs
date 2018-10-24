@@ -71,6 +71,8 @@ namespace CommandTerminalPlus
         Texture2D background_texture;
         Texture2D input_background_texture;
 
+        public static void BottomOutScrollbar() => Instance.scroll_position.y = int.MaxValue;
+
         public static CommandLog Buffer { get; private set; }
         public static CommandShell Shell { get; private set; }
         public static CommandHistory History { get; private set; }
@@ -136,7 +138,7 @@ namespace CommandTerminalPlus
                         return;
                     }
                     real_window_size = open_target;
-                    scroll_position.y = int.MaxValue;
+                    BottomOutScrollbar();
                     OnTerminalOpen();
                     break;
                 }
@@ -375,16 +377,13 @@ namespace CommandTerminalPlus
         }
 
         void EnterCommand() {
-            Log(TerminalLogType.Input, "{0}", command_text);
             Shell.RunCommand(command_text);
-            History.Push(command_text);
 
             if (IssuedError) {
                 Log(TerminalLogType.Error, "Error: {0}", Shell.IssuedErrorMessage);
             }
 
             command_text = "";
-            scroll_position.y = int.MaxValue;
         }
 
         void CompleteCommand() {
@@ -407,7 +406,7 @@ namespace CommandTerminalPlus
                 }
 
                 Log("{0}", log_buffer);
-                scroll_position.y = int.MaxValue;
+                BottomOutScrollbar();
             }
         }
 
@@ -421,7 +420,7 @@ namespace CommandTerminalPlus
 
         void HandleUnityLog(string message, string stack_trace, LogType type) {
             Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
-            scroll_position.y = int.MaxValue;
+            BottomOutScrollbar();
         }
 
         Color GetLogColor(TerminalLogType type) {
