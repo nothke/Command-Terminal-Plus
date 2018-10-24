@@ -39,7 +39,7 @@ namespace CommandTerminal
             }
         }
 
-        [RegisterCommand(Help = "Time the execution of a command", MinArgCount = 1)]
+        [RegisterCommand(Help = "Measure the execution time of a command", MinArgCount = 1)]
         static void CommandTime(CommandArg[] args) {
             var sw = new Stopwatch();
             sw.Start();
@@ -96,10 +96,7 @@ namespace CommandTerminal
         [RegisterCommand(Help = "Bind a key to a command", MinArgCount = 2)]
         static void CommandBind(CommandArg[] args)
         {
-            string fullCommand = "";
-            for (int i = 1; i < args.Length; i++)
-                fullCommand += args[i].String;
-
+            string fullCommand = JoinArguments(args, start: 1);
             Terminal.AddBinding(args[0].AsEnum<KeyCode>(), fullCommand);
         }
 
