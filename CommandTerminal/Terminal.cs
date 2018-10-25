@@ -466,9 +466,10 @@ namespace CommandTerminalPlus
             string filepath = Path.Combine(directory, fileName);
             if (File.Exists(filepath))
             {
-                var commands = File.ReadAllLines(filepath);
-                for (int i = 0; i < commands.Length; i++)
-                    Shell.RunCommand(commands[i]);
+                var lines = File.ReadAllLines(filepath);
+                for (int i = 0; i < lines.Length; i++)
+                    if(!lines[i].StartsWith("#") && !string.IsNullOrWhiteSpace(lines[i]))
+                        Shell.RunCommand(lines[i]);
             }
         }
 
