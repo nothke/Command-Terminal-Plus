@@ -52,13 +52,15 @@ namespace CommandTerminalPlus
             Terminal.Log("Time: {0}ms", (double)sw.ElapsedTicks / 10000);
         }
 
-        [RegisterCommand(Help = "Schedule a command to be executed some time in the future", MinArgCount = 2)]
+        [RegisterCommand(Help = "Schedule a command to be executed some time in the future", MinArgCount = 2,
+            Usage = "schedule [delay] [command] - delay is in seconds")]
         static void CommandSchedule(CommandArg[] args)
         {
             Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: false);
         }
 
-        [RegisterCommand(Help = "Schedule a command using the time scale", MinArgCount = 2)]
+        [RegisterCommand(Help = "Schedule a command using the time scale", MinArgCount = 2,
+            Usage = "schedule [delay] [command] - delay is in seconds")]
         static void CommandScheduleScaled(CommandArg[] args)
         {
             Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: true);
@@ -111,7 +113,8 @@ namespace CommandTerminalPlus
             Terminal.AddBinding(args[0].AsEnum<KeyCode>(), fullCommand);
         }
 
-        [RegisterCommand(Help = "Remove all bindings from a key", MinArgCount = 1, MaxArgCount = 1)]
+        [RegisterCommand(Help = "Remove all bindings from a key", MinArgCount = 1, MaxArgCount = 1,
+            Usage = "unbind [keycode] - see https://docs.unity3d.com/ScriptReference/KeyCode.html for a list of valid keycodes")]
         static void CommandUnbind(CommandArg[] args)
         {
             Terminal.ResetBinding(args[0].AsEnum<KeyCode>());
