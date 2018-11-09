@@ -186,7 +186,7 @@ namespace CommandTerminalPlus
         void Start() {
             if (ConsoleFont == null) {
                 ConsoleFont = Font.CreateDynamicFontFromOSFont("Courier New", 16);
-                Debug.LogWarning("Command Console Warning: Please assign a font.");
+                Debug.LogWarning("Please assign a font to the command terminal - using OS font Courier New for now.");
             }
 
             if (ConsoleFontSize == 0)
