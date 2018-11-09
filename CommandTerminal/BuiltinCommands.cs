@@ -56,14 +56,14 @@ namespace CommandTerminalPlus
             Usage = "schedule [delay] [command] - delay is in seconds")]
         static void CommandSchedule(CommandArg[] args)
         {
-            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: false);
+            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: true);
         }
 
         [RegisterCommand(Help = "Schedule a command using the time scale", MinArgCount = 2,
             Usage = "schedule [delay] [command] - delay is in seconds")]
-        static void CommandScheduleScaled(CommandArg[] args)
+        static void CommandScheduleUnScaled(CommandArg[] args)
         {
-            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: true);
+            Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: false);
         }
 
         [RegisterCommand(Help = "Output message")]
