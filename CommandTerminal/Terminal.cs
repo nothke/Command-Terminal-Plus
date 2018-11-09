@@ -207,7 +207,8 @@ namespace CommandTerminalPlus
             }
 
             foreach (var command in Shell.Commands) {
-                Autocomplete.Register(command.Key);
+                if(!command.Value.secret)
+                    Autocomplete.Register(command.Key);
             }
 
             RunStartupCommands();
