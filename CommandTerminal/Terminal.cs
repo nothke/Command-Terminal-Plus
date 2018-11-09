@@ -468,6 +468,9 @@ namespace CommandTerminalPlus
 
         private static void RunStartupCommands()
         {
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+                return;
+
             const string fileName = "StartupCommands.txt";
 
             // In editor, this refers to the directory which contains the assets folder.
@@ -480,6 +483,10 @@ namespace CommandTerminalPlus
                 for (int i = 0; i < lines.Length; i++)
                     if(!lines[i].StartsWith("#") && !string.IsNullOrWhiteSpace(lines[i]))
                         Shell.RunCommand(lines[i]);
+            }
+            else
+            {
+                File.WriteAllText(filepath, "# each line of this file that doesn't begin with # will be run as a command when the game starts");
             }
         }
 
