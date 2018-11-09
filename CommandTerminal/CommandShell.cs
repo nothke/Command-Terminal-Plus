@@ -288,12 +288,24 @@ namespace CommandTerminalPlus
 
         public void AddVariable(string name, PropertyInfo info)
         {
+            if (!IsAllowedPropertyType(info.PropertyType))
+                throw new Exception($"can't register property {info.Name} - registered variables must be string, int, float, bool or enum");
+
             name = name.ToUpper();
 
             if (variables.ContainsKey(name))
                 throw new Exception($"there is already a variable called {name}");
 
             variables.Add(name, info);
+        }
+
+        bool IsAllowedPropertyType(Type type)
+        {
+            return type == typeof(string)
+                || type == typeof(int)
+                || type == typeof(float)
+                || type == typeof(bool)
+                || type.IsEnum;
         }
 
         public void SetVariable(string name, string value) {
@@ -309,7 +321,6 @@ namespace CommandTerminalPlus
             object value = null;
 
             var propertyType = variables[name].PropertyType;
-
 
             if (propertyType == typeof(string))
                 value = arg.String;
