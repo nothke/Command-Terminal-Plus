@@ -146,8 +146,11 @@ namespace CommandTerminalPlus
         [RegisterCommand(Help = "No operation")]
         static void CommandNoop(CommandArg[] args) { }
 
+        [RegisterCommand(Secret = true)]
+        static void CommandQuit(CommandArg[] args) => CommandExit(args);
+
         [RegisterCommand(Help = "Quit running application", MaxArgCount = 0)]
-        static void CommandQuit(CommandArg[] args) {
+        static void CommandExit(CommandArg[] args) {
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else
