@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CommandTerminalPlus
 {
-    public class CommandAutocomplete
+    public class TerminalAutocomplete
     {
         List<string> known_words = new List<string>();
         List<string> buffer = new List<string>();

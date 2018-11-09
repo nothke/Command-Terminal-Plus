@@ -21,7 +21,7 @@ namespace CommandTerminalPlus
         public string stack_trace;
     }
 
-    public class CommandLog
+    public class TerminalLog
     {
         List<LogItem> logs = new List<LogItem>();
         int max_items;
@@ -30,7 +30,7 @@ namespace CommandTerminalPlus
             get { return logs; }
         }
 
-        public CommandLog(int max_items) {
+        public TerminalLog(int max_items) {
             this.max_items = max_items;
         }
 

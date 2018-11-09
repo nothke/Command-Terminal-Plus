@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace CommandTerminalPlus
 {
-    public class CommandHistory
+    public class TerminalHistory
     {
         List<string> history = new List<string>();
         int position;

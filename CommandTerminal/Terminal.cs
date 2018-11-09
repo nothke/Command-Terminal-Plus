@@ -73,10 +73,10 @@ namespace CommandTerminalPlus
 
         public static void BottomOutScrollbar() => Instance.scroll_position.y = int.MaxValue;
 
-        public static CommandLog Buffer { get; private set; }
+        public static TerminalLog Buffer { get; private set; }
         public static CommandShell Shell { get; private set; }
-        public static CommandHistory History { get; private set; }
-        public static CommandAutocomplete Autocomplete { get; private set; }
+        public static TerminalHistory History { get; private set; }
+        public static TerminalAutocomplete Autocomplete { get; private set; }
 
         public static bool IssuedError {
             get { return Shell.IssuedErrorMessage != null; }
@@ -170,10 +170,10 @@ namespace CommandTerminalPlus
         }
 
         void OnEnable() {
-            Buffer = new CommandLog(BufferSize);
+            Buffer = new TerminalLog(BufferSize);
             Shell = new CommandShell();
-            History = new CommandHistory();
-            Autocomplete = new CommandAutocomplete();
+            History = new TerminalHistory();
+            Autocomplete = new TerminalAutocomplete();
 
             // Hook Unity log events
             Application.logMessageReceived += HandleUnityLog;
