@@ -425,7 +425,10 @@ namespace CommandTerminalPlus
             editor_state.MoveCursorToPosition(new Vector2(999, 999));
         }
 
+        public static bool LogUnityMessages = true;
         void HandleUnityLog(string message, string stack_trace, LogType type) {
+            if (!LogUnityMessages) return;
+
             Buffer.HandleLog(message, stack_trace, (TerminalLogType)type);
             BottomOutScrollbar();
         }

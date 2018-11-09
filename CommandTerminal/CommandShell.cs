@@ -160,9 +160,9 @@ namespace CommandTerminalPlus
 
                     if (attribute == null) continue;
 
-                    string command_name = attribute.Name ?? property.Name;
+                    string variable_name = attribute.Name ?? property.Name;
 
-                    AddVariable(command_name, property);
+                    AddVariable(variable_name, property);
                 }
             }
             HandleRejectedCommands(rejected_commands);
