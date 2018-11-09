@@ -23,6 +23,11 @@ namespace CommandTerminalPlus
         public string Help { get; set; }
         public string Hint { get; set; }
 
+        /// <summary>
+        /// if this is true, the command will not show up in help.
+        /// </summary>
+        public bool Secret { get; set; }
+
         public RegisterCommandAttribute(string command_name = null) {
             Name = command_name;
         }

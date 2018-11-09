@@ -16,7 +16,8 @@ namespace CommandTerminalPlus
         static void CommandHelp(CommandArg[] args) {
             if (args.Length == 0) {
                 foreach (var command in Terminal.Shell.Commands) {
-                    Terminal.Log("{0}: {1}", command.Key.PadRight(16), command.Value.help);
+                    if(!command.Value.secret)
+                        Terminal.Log("{0}: {1}", command.Key.PadRight(16), command.Value.help);
                 }
                 return;
             }

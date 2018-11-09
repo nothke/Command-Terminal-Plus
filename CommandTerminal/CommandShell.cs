@@ -13,6 +13,7 @@ namespace CommandTerminalPlus
         public int min_arg_count;
         public string help;
         public string hint;
+        public bool secret;
     }
 
     public struct CommandArg
@@ -150,7 +151,7 @@ namespace CommandTerminalPlus
                     // This is essentially allows us to store a reference to the method,
                     // which makes calling the method significantly more performant than using MethodInfo.Invoke().
                     proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
-                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Hint);
+                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Hint, attribute.Secret);
                 }
 
                 foreach(var property in type.GetProperties(property_flags)) {
@@ -260,13 +261,14 @@ namespace CommandTerminalPlus
             commands.Add(name, info);
         }
 
-        public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null) {
+        public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null, bool secret = false) {
             var info = new CommandInfo() {
                 proc = proc,
                 min_arg_count = min_args,
                 max_arg_count = max_args,
                 help = help,
-                hint = hint
+                hint = hint,
+                secret = secret,
             };
 
             AddCommand(name, info);
