@@ -20,5 +20,5 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * added `Secret` bool to RegisterCommandAttribute. If it's true, the command won't show up with the `help` command. This is intended for easter eggs.
 * added secret `exit` command which does the same thing as `quit`
 * tweaked some help messages on default commands
-* tweaked some variable names to be more self-explanitory
+* tweaked some variable names to be more self-explanatory
 * generally improved a bunch of code
