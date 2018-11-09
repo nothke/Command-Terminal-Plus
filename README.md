@@ -3,7 +3,7 @@ Command Terminal Plus
 
 This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/command_terminal) with a bunch more features. Here's a list of them so far:
 
-* added `bind` default command, which allows you to bind any command to a keyboard key. Keys can have multiple commands bound to them.
+* added `bind` default command, which allows you to bind any command to a keyboard key. There can be multiple commands bound to a single key.
 * added `unbind` default command, to reset bindings of a key
 * added `schedule` default command, to schedule a command to execute in the future
 * added `scheduleunscaled` default command, which is like `schedule` but it uses unscaled time
