@@ -86,12 +86,19 @@ namespace CommandTerminalPlus
             get { return state == TerminalState.Close && Mathf.Approximately(current_open_t, open_target); }
         }
 
+        public static void Log(string message, TerminalLogType type = TerminalLogType.Message) {
+            Log(type, "{0}", message);
+        }
+
         public static void Log(string format, params object[] message) {
             Log(TerminalLogType.ShellMessage, format, message);
         }
 
         public static void Log(TerminalLogType type, string format, params object[] message) {
-            Buffer.HandleLog(string.Format(format, message), type);
+            var text = string.Format(format, message);
+            Buffer.HandleLog(text, type);
+            BottomOutScrollbar();
+            History.Push(text);
         }
 
         private CursorLockMode PreviousCursorLockState;

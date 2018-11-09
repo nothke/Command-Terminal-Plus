@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.Diagnostics;
+using System.IO;
 using UnityEngine;
 
 namespace CommandTerminalPlus
@@ -113,6 +114,32 @@ namespace CommandTerminalPlus
         static void CommandUnbind(CommandArg[] args)
         {
             Terminal.ResetBinding(args[0].AsEnum<KeyCode>());
+        }
+
+        [RegisterCommand(Help = "Save a screenshot of the game. You probably want to bind this to a key", MaxArgCount = 2)]
+        static void CommandScreenshot(CommandArg[] args)
+        {
+            var filePath = Path.Combine(Application.persistentDataPath, "screenshots", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss-fff"));
+            var superSize = 1;
+
+            if (args.Length > 0)
+                superSize = args[0].Int;
+
+            if (args.Length > 1)
+            {
+                var name = args[1].String;
+                if (Path.IsPathRooted(name))
+                    filePath = name;
+                else
+                    filePath = Path.Combine(Application.persistentDataPath, "screenshots", name);
+            }
+
+            filePath = Path.ChangeExtension(filePath, ".png");
+            string folderPath = new DirectoryInfo(filePath).Parent.FullName;
+            Directory.CreateDirectory(folderPath);
+
+            ScreenCapture.CaptureScreenshot(filePath, superSize);
+            Terminal.Log($"saved screenshot as {filePath} (supersize {superSize})");
         }
 
         [RegisterCommand(Help = "No operation")]

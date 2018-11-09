@@ -172,9 +172,7 @@ namespace CommandTerminalPlus
         /// Parses an input line into a command and runs that command.
         /// </summary>
         public void RunCommand(string line) {
-            Terminal.Log(TerminalLogType.Input, "{0}", line);
-            Terminal.History.Push(line);
-            Terminal.BottomOutScrollbar();
+            Terminal.Log(line, TerminalLogType.Input);
 
             string remaining = line;
             IssuedErrorMessage = null;
