@@ -144,7 +144,7 @@ namespace CommandTerminalPlus
                    if (methods_params.Length != 1 || methods_params[0].ParameterType != typeof(CommandArg[])) {
                         // Method does not match expected Action signature,
                         // this could be a command that has a FrontCommand method to handle its arguments.
-                        rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Usage));
+                        rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Help));
                         continue;
                     }
 
@@ -152,7 +152,7 @@ namespace CommandTerminalPlus
                     // This is essentially allows us to store a reference to the method,
                     // which makes calling the method significantly more performant than using MethodInfo.Invoke().
                     proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
-                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Usage, attribute.Hint, attribute.Secret);
+                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Usage, attribute.Secret);
                 }
 
                 foreach(var property in type.GetProperties(property_flags)) {
@@ -273,13 +273,13 @@ namespace CommandTerminalPlus
             commands.Add(name, info);
         }
 
-        public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string hint = null, bool secret = false) {
+        public void AddCommand(string name, Action<CommandArg[]> proc, int min_args = 0, int max_args = -1, string help = "", string usage = null, bool secret = false) {
             var info = new CommandInfo() {
                 proc = proc,
                 min_arg_count = min_args,
                 max_arg_count = max_args,
                 help = help,
-                usage = hint,
+                usage = usage,
                 secret = secret,
             };
 

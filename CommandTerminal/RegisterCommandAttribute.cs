@@ -20,8 +20,8 @@ namespace CommandTerminalPlus
         }
 
         public string Name { get; set; }
+        public string Help { get; set; }
         public string Usage { get; set; }
-        public string Hint { get; set; }
 
         /// <summary>
         /// if this is true, the command will not show up in help.
