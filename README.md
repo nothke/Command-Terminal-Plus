@@ -8,7 +8,7 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * added `schedule` default command, to schedule a command to execute in the future
 * added `scheduleunscaled` default command, which is like `schedule` but it uses unscaled time
 * added `screenshot` default command, which can be used with custom values for supersize, file name and file path
-* removed the (IMO pointless) variable system from the orginal. Now you use the `set` command to modify or read properties in your game. Use the `[RegisterVariable]` attribute for this.
+* removed the (IMO pointless) variable system from the original. Now you use the `set` command to modify or read properties in your game. Use the `[RegisterVariable]` attribute for this.
 * added `timescale` default variable, for modifying `UnityEngine.Time.timeScale`
 * added `handleunitylog` default variable, which can be used to disable unity console output in the terminal
 * added user-editable file StartupCommands.txt. When the terminal starts up, each line of this file is read. Each line which is not empty and does not start with the character `#` (used for comments) is run as a command.
