@@ -134,6 +134,7 @@ namespace CommandTerminalPlus
                     filePath = Path.Combine(Application.persistentDataPath, "screenshots", name);
             }
 
+            filePath = filePath.Replace('\\', '/'); // this is mostly so that the Terminal.Log message looks consistent on Windows
             filePath = Path.ChangeExtension(filePath, ".png");
             string folderPath = new DirectoryInfo(filePath).Parent.FullName;
             Directory.CreateDirectory(folderPath);
