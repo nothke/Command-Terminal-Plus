@@ -384,6 +384,7 @@ namespace CommandTerminalPlus
         }
 
         void EnterCommand() {
+            Debug.Log(command_text.Split('\r').Length - 1);
             Shell.RunCommand(command_text);
 
             if (IssuedError) {

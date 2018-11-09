@@ -12,7 +12,7 @@ namespace CommandTerminalPlus
         public int max_arg_count;
         public int min_arg_count;
         public string help;
-        public string hint;
+        public string usage;
         public bool secret;
     }
 
@@ -72,7 +72,8 @@ namespace CommandTerminalPlus
             }
             else
             {
-                Terminal.Shell.IssueErrorMessage($"value {String} not found in enum type {typeof(T).FullName}");
+                TypeError(typeof(T).FullName);
+                    throw new Exception($"value {String} not found in enumerated type {typeof(T).FullName}");
                 return default;
             }
         }
@@ -143,7 +144,7 @@ namespace CommandTerminalPlus
                    if (methods_params.Length != 1 || methods_params[0].ParameterType != typeof(CommandArg[])) {
                         // Method does not match expected Action signature,
                         // this could be a command that has a FrontCommand method to handle its arguments.
-                        rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Help));
+                        rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Usage));
                         continue;
                     }
 
@@ -151,7 +152,7 @@ namespace CommandTerminalPlus
                     // This is essentially allows us to store a reference to the method,
                     // which makes calling the method significantly more performant than using MethodInfo.Invoke().
                     proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
-                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Hint, attribute.Secret);
+                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Usage, attribute.Hint, attribute.Secret);
                 }
 
                 foreach(var property in type.GetProperties(property_flags)) {
@@ -238,14 +239,27 @@ namespace CommandTerminalPlus
                     plural_fix
                 );
 
-                if (command.hint != null) {
-                    IssuedErrorMessage += string.Format("\n    -> Usage: {0}", command.hint);
-                }
-
+                ShowUsage();
                 return;
             }
 
-            command.proc(arguments);
+            try
+            {
+                command.proc(arguments);
+            }
+            catch (Exception e)
+            {
+                IssueErrorMessage(e.Message);
+            }
+
+            if (IssuedErrorMessage != null)
+                ShowUsage();
+
+            void ShowUsage()
+            {
+                if (command.usage != null)
+                    IssuedErrorMessage += string.Format("\n    -> Usage: {0}", command.usage);
+            }
         }
 
         public void AddCommand(string name, CommandInfo info) {
@@ -265,7 +279,7 @@ namespace CommandTerminalPlus
                 min_arg_count = min_args,
                 max_arg_count = max_args,
                 help = help,
-                hint = hint,
+                usage = hint,
                 secret = secret,
             };
 

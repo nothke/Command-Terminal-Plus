@@ -20,7 +20,7 @@ namespace CommandTerminalPlus
         }
 
         public string Name { get; set; }
-        public string Help { get; set; }
+        public string Usage { get; set; }
         public string Hint { get; set; }
 
         /// <summary>
