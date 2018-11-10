@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Diagnostics;
 using System.IO;
@@ -102,7 +102,14 @@ namespace CommandTerminalPlus
 
             string variable_name = args[0].String;
 
-            Terminal.Shell.SetVariable(variable_name, JoinArguments(args, 1));
+            try
+            {
+                Terminal.Shell.SetVariable(variable_name, JoinArguments(args, 1));
+            }
+            catch(Exception e)
+            {
+                throw e?.InnerException ?? e;
+            }
         }
 
         [RegisterCommand(Help = "Bind a key to a command", MinArgCount = 2,

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Text;
 using System.Collections.Generic;
 using System.Collections;
@@ -110,13 +110,13 @@ namespace CommandTerminalPlus
             PreviousCursorVisible = Cursor.visible;
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            WhenTerminalOpens.Invoke();
+            WhenTerminalOpens?.Invoke();
         }
         private void OnTerminalClose()
         {
             Cursor.lockState = PreviousCursorLockState;
             Cursor.visible = PreviousCursorVisible;
-            WhenTerminalCloses.Invoke();
+            WhenTerminalCloses?.Invoke();
         }
 
         public static event System.Action WhenTerminalOpens;
