@@ -16,6 +16,7 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * pressing enter on the numpad can also be used to input a command. This is thanks to [@bgr](https://github.com/bgr)'s [pull request](https://github.com/stillwwater/command_terminal/pull/8) on the orginal repo.
 * terminal font size is customizable
 * you can now get a CommandArg as any enum type
+* commands (and variables) are registered in ALL assemblies, not just the main assembly
 * added events when the terminal opens and closes. This is useful if you have a player controller you want to disable while the terminal is open.
 * added `Secret` bool to RegisterCommandAttribute. If it's true, the command won't show up with the `help` command. This is intended for easter eggs.
 * added secret `exit` command which does the same thing as `quit`

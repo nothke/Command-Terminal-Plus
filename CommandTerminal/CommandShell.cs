@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,63 +26,78 @@ namespace CommandTerminalPlus
         /// Uses reflection to find all RegisterCommand and RegisterVariable attributes
         /// and adds them to the commands dictionary.
         /// </summary>
-        public void RegisterCommandsAndVariables() {
+        public void RegisterCommandsAndVariables()
+        {
             var rejected_commands = new Dictionary<string, CommandInfo>();
             var method_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var property_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-            foreach (var type in Assembly.GetExecutingAssembly().GetTypes()) {
-                foreach (var method in type.GetMethods(method_flags)) {
-                    var attribute = Attribute.GetCustomAttribute(
-                        method, typeof(RegisterCommandAttribute)) as RegisterCommandAttribute;
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                foreach (var type in assembly.GetTypes())
+                {
+                    foreach (var method in type.GetMethods(method_flags))
+                    {
+                        var attribute = Attribute.GetCustomAttribute(
+                            method, typeof(RegisterCommandAttribute)) as RegisterCommandAttribute;
 
-                    if (attribute == null) {
-                        if (method.Name.StartsWith("FRONTCOMMAND", StringComparison.CurrentCultureIgnoreCase)) {
-                            // Front-end Command methods don't implement RegisterCommand, use default attribute
-                            attribute = new RegisterCommandAttribute();
-                        } else {
+                        if (attribute == null)
+                        {
+                            if (method.Name.StartsWith("FRONTCOMMAND", StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                // Front-end Command methods don't implement RegisterCommand, use default attribute
+                                attribute = new RegisterCommandAttribute();
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+
+                        var methods_params = method.GetParameters();
+
+                        string command_name = InferFrontCommandName(method.Name);
+                        Action<CommandArg[]> proc;
+
+                        if (attribute.Name == null)
+                        {
+                            // Use the method's name as the command's name
+                            command_name = InferCommandName(command_name == null ? method.Name : command_name);
+                        }
+                        else
+                        {
+                            command_name = attribute.Name;
+                        }
+
+                        if (methods_params.Length != 1 || methods_params[0].ParameterType != typeof(CommandArg[]))
+                        {
+                            // Method does not match expected Action signature,
+                            // this could be a command that has a FrontCommand method to handle its arguments.
+                            rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Help));
                             continue;
                         }
+
+                        // Convert MethodInfo to Action.
+                        // This is essentially allows us to store a reference to the method,
+                        // which makes calling the method significantly more performant than using MethodInfo.Invoke().
+                        proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
+                        AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Usage, attribute.Secret);
                     }
 
-                    var methods_params = method.GetParameters();
+                    foreach (var property in type.GetProperties(property_flags))
+                    {
+                        var attribute = Attribute.GetCustomAttribute(
+                            property, typeof(RegisterVariableAttribute)) as RegisterVariableAttribute;
 
-                    string command_name = InferFrontCommandName(method.Name);
-                    Action<CommandArg[]> proc;
+                        if (attribute == null) continue;
 
-                    if (attribute.Name == null) {
-                        // Use the method's name as the command's name
-                        command_name = InferCommandName(command_name == null ? method.Name : command_name);
-                    } else {
-                        command_name = attribute.Name;
+                        string variable_name = attribute.Name ?? property.Name;
+
+                        AddVariable(variable_name, property);
                     }
-
-                   if (methods_params.Length != 1 || methods_params[0].ParameterType != typeof(CommandArg[])) {
-                        // Method does not match expected Action signature,
-                        // this could be a command that has a FrontCommand method to handle its arguments.
-                        rejected_commands.Add(command_name.ToUpper(), CommandFromParamInfo(methods_params, attribute.Help));
-                        continue;
-                    }
-
-                    // Convert MethodInfo to Action.
-                    // This is essentially allows us to store a reference to the method,
-                    // which makes calling the method significantly more performant than using MethodInfo.Invoke().
-                    proc = (Action<CommandArg[]>)Delegate.CreateDelegate(typeof(Action<CommandArg[]>), method);
-                    AddCommand(command_name, proc, attribute.MinArgCount, attribute.MaxArgCount, attribute.Help, attribute.Usage, attribute.Secret);
                 }
-
-                foreach(var property in type.GetProperties(property_flags)) {
-                    var attribute = Attribute.GetCustomAttribute(
-                        property, typeof(RegisterVariableAttribute)) as RegisterVariableAttribute;
-
-                    if (attribute == null) continue;
-
-                    string variable_name = attribute.Name ?? property.Name;
-
-                    AddVariable(variable_name, property);
-                }
+                HandleRejectedCommands(rejected_commands);
             }
-            HandleRejectedCommands(rejected_commands);
         }
 
         /// <summary>
