@@ -20,6 +20,7 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * added events when the terminal opens and closes. This is useful if you have a player controller you want to disable while the terminal is open.
 * added `Secret` bool to RegisterCommandAttribute. If it's true, the command won't show up with the `help` command. This is intended for easter eggs.
 * added secret `exit` command which does the same thing as `quit`
+* `Terminal.cs.meta` is part of version control, so if you use CTP as a submodule, it doesn't break when loaded on somebody else's computer
 * tweaked some help messages on default commands
 * tweaked some variable names to be more self-explanatory
 * generally improved a bunch of code
