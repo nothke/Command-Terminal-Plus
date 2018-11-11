@@ -487,7 +487,8 @@ namespace CommandTerminalPlus
             }
             else
             {
-                File.WriteAllText(filepath, "# each line of this file that doesn't begin with # will be run as a command when the game starts");
+                File.WriteAllText(filepath, @"# each line of this file that doesn't begin with # will be run as a command when the game starts.
+# If you are the developer and you include important stuff here, make sure to include it with your builds. It is not automatically added.");
             }
         }
 
