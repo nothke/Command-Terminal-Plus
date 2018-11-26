@@ -18,9 +18,11 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * you can now get a CommandArg as any enum type
 * commands (and variables) are registered in ALL assemblies, not just the main assembly
 * added events when the terminal opens and closes. This is useful if you have a player controller you want to disable while the terminal is open.
+* commands now accept yes/no/y/n/on/off as values for booleans
 * added `Secret` bool to RegisterCommandAttribute. If it's true, the command won't show up with the `help` command. This is intended for easter eggs.
 * added secret `exit` command which does the same thing as `quit`
 * `Terminal.cs.meta` is part of version control, so if you use CTP as a submodule, it doesn't break when loaded on somebody else's computer
 * tweaked some help messages on default commands
 * tweaked some variable names to be more self-explanatory
+* fixed default commands having the incorrect names in WebGL
 * generally improved a bunch of code
