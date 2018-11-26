@@ -8,12 +8,12 @@ namespace CommandTerminalPlus
 {
     public static class BuiltinCommands
     {
-        [RegisterCommand(Help = "Clear the command console", MaxArgCount = 0)]
+        [RegisterCommand(Name = "Clear", Help = "Clear the command console", MaxArgCount = 0)]
         static void CommandClear(CommandArg[] args) {
             Terminal.Buffer.Clear();
         }
 
-        [RegisterCommand(Help = "Display help information about a command", MaxArgCount = 1)]
+        [RegisterCommand(Name = "Help", Help = "Display help information about a command", MaxArgCount = 1)]
         static void CommandHelp(CommandArg[] args) {
             if (args.Length == 0) {
                 foreach (var command in Terminal.Shell.Commands) {
@@ -41,7 +41,7 @@ namespace CommandTerminalPlus
             }
         }
 
-        [RegisterCommand(Help = "Measure the execution time of a command", MinArgCount = 1)]
+        [RegisterCommand(Name = "Time", Help = "Measure the execution time of a command", MinArgCount = 1)]
         static void CommandTime(CommandArg[] args) {
             var sw = new Stopwatch();
             sw.Start();
@@ -52,27 +52,27 @@ namespace CommandTerminalPlus
             Terminal.Log("Time: {0}ms", (double)sw.ElapsedTicks / 10000);
         }
 
-        [RegisterCommand(Help = "Schedule a command to be executed some time in the future", MinArgCount = 2,
+        [RegisterCommand(Name = "Schedule", Help = "Schedule a command to be executed some time in the future", MinArgCount = 2,
             Usage = "schedule [delay] [command] - delay is in seconds")]
         static void CommandSchedule(CommandArg[] args)
         {
             Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: true);
         }
 
-        [RegisterCommand(Help = "Schedule a command using the time scale", MinArgCount = 2,
+        [RegisterCommand(Name = "ScheduleUnscaled", Help = "Schedule a command using the time scale", MinArgCount = 2,
             Usage = "schedule [delay] [command] - delay is in seconds")]
         static void CommandScheduleUnScaled(CommandArg[] args)
         {
             Terminal.RunCommandAfterDelay(args[0].Float, JoinArguments(args, 1), scaledTime: false);
         }
 
-        [RegisterCommand(Help = "Output message")]
+        [RegisterCommand(Name = "Print", Help = "Output message")]
         static void CommandPrint(CommandArg[] args) {
             Terminal.Log(JoinArguments(args));
         }
 
     #if DEBUG
-        [RegisterCommand(Help = "Output the stack trace of the previous message", MaxArgCount = 0)]
+        [RegisterCommand(Name = "Trace", Help = "Output the stack trace of the previous message", MaxArgCount = 0)]
         static void CommandTrace(CommandArg[] args) {
             int log_count = Terminal.Buffer.Logs.Count;
 
@@ -91,7 +91,7 @@ namespace CommandTerminalPlus
         }
     #endif
 
-        [RegisterCommand(Help = "List all variables or set a variable value")]
+        [RegisterCommand(Name = "Set", Help = "List all variables or set a variable value")]
         static void CommandSet(CommandArg[] args) {
             if (args.Length == 0) {
                 foreach (var v in Terminal.Shell.Variables) {
@@ -112,7 +112,7 @@ namespace CommandTerminalPlus
             }
         }
 
-        [RegisterCommand(Help = "Bind a key to a command", MinArgCount = 2,
+        [RegisterCommand(Name = "Bind", Help = "Bind a key to a command", MinArgCount = 2,
             Usage = "bind [keycode] [command] - see https://docs.unity3d.com/ScriptReference/KeyCode.html for a list of valid keycodes")]
         static void CommandBind(CommandArg[] args)
         {
@@ -120,14 +120,14 @@ namespace CommandTerminalPlus
             Terminal.AddBinding(args[0].AsEnum<KeyCode>(), fullCommand);
         }
 
-        [RegisterCommand(Help = "Remove all bindings from a key", MinArgCount = 1, MaxArgCount = 1,
+        [RegisterCommand(Name = "Unbind", Help = "Remove all bindings from a key", MinArgCount = 1, MaxArgCount = 1,
             Usage = "unbind [keycode] - see https://docs.unity3d.com/ScriptReference/KeyCode.html for a list of valid keycodes")]
         static void CommandUnbind(CommandArg[] args)
         {
             Terminal.ResetBinding(args[0].AsEnum<KeyCode>());
         }
 
-        [RegisterCommand(Help = "Save a screenshot of the game. You probably want to bind this to a key", MaxArgCount = 2, 
+        [RegisterCommand(Name = "Screenshot", Help = "Save a screenshot of the game. You probably want to bind this to a key", MaxArgCount = 2, 
             Usage = "screenshot [supersize] [file name or path]")]
         static void CommandScreenshot(CommandArg[] args)
         {
@@ -155,13 +155,13 @@ namespace CommandTerminalPlus
             Terminal.Log($"saved screenshot as {filePath} (supersize {superSize})");
         }
 
-        [RegisterCommand(Help = "No operation")]
+        [RegisterCommand(Name = "Noop", Help = "No operation")]
         static void CommandNoop(CommandArg[] args) { }
 
-        [RegisterCommand(Secret = true)]
+        [RegisterCommand(Name = "Quit", Secret = true)]
         static void CommandQuit(CommandArg[] args) => CommandExit(args);
 
-        [RegisterCommand(Help = "Quit running application", MaxArgCount = 0)]
+        [RegisterCommand(Name = "Exit", Help = "Quit running application. 'exit' also works.", MaxArgCount = 0)]
         static void CommandExit(CommandArg[] args) {
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
