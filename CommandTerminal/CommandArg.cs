@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace CommandTerminalPlus
 {
@@ -36,15 +37,18 @@ namespace CommandTerminalPlus
             }
         }
 
-        public bool Bool {
-            get {
-                if (string.Compare(String, "TRUE", ignoreCase: true) == 0) {
-                    return true;
-                }
+        static readonly string[] TrueStrings = { "true", "yes", "y", "on" };
+        static readonly string[] FalseStrings = { "false", "no", "n", "off" };
 
-                if (string.Compare(String, "FALSE", ignoreCase: true) == 0) {
+        public bool Bool
+        {
+            get
+            {
+                if (TrueStrings.Contains(String.ToLower()))
+                    return true;
+
+                if (FalseStrings.Contains(String.ToLower()))
                     return false;
-                }
 
                 TypeError("bool");
                 return false;
