@@ -22,6 +22,7 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * added `Secret` bool to RegisterCommandAttribute. If it's true, the command won't show up with the `help` command. This is intended for easter eggs.
 * added secret `exit` command which does the same thing as `quit`
 * `Terminal.cs.meta` is part of version control, so if you use CTP as a submodule, it doesn't break when loaded on somebody else's computer
+* added the necessary files (`package.json` and `CommandTerminalPlus.asmdef`) so that it can be used as a Unity package via the package manager
 * tweaked some help messages on default commands
 * tweaked some variable names to be more self-explanatory
 * fixed default commands having the incorrect names in WebGL
