@@ -1,7 +1,7 @@
 {
   "name": "com.jimmycushnie.command-terminal-plus",
   "displayName": "Command Terminal Plus",
-  "version": "0.0.94",
+  "version": "0.0.95",
   "unity": "2018.1",
   "description": "Like Command Terminal, but with more plus",
   "keywords": [ "command", "terminal", "console" ],
