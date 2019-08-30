@@ -1,3 +1,10 @@
+## Update 2019-08-30
+
+I will no longer be maintaining Command Terminal Plus. In my personal projects, I have replaced it with a frontend for [LICC](http://licc.software) called Fancy Pants Console. You can see FPC in action [here](https://www.youtube.com/watch?v=QDp5wE1Se6o). I do plan on open sourcing FPC eventually, but it relies on a lot of custom UI code so that will happen after we open source our custom UI library.
+
+If you would like to take ownership of this repo, hit me up.
+
+
 Command Terminal Plus
 ======================
 
