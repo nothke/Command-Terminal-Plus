@@ -6,6 +6,12 @@ using UnityEngine;
 
 namespace CommandTerminalPlus
 {
+    public enum AssemblyLoadingBehavior
+    {
+        All,
+        Custom
+    }
+
     public class CommandShell
     {
         Dictionary<string, CommandInfo> commands = new Dictionary<string, CommandInfo>();
@@ -25,15 +31,50 @@ namespace CommandTerminalPlus
         /// <summary>
         /// Uses reflection to find all RegisterCommand and RegisterVariable attributes
         /// and adds them to the commands dictionary.
+        /// 
+        /// If loading behavior is "All", it will read from all assemblies.
+        /// For improving startup performance it is recommended to only load
+        /// from manually set additional assemblies 
+        /// (Terminal and CSharp script assemblies are already included)
         /// </summary>
-        public void RegisterCommandsAndVariables()
+        public void RegisterCommandsAndVariables(
+            AssemblyLoadingBehavior assemblyLoadingBehavior,
+            HashSet<string> additionalAssembliesToLoad)
         {
             var rejected_commands = new Dictionary<string, CommandInfo>();
             var method_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             var property_flags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            // Cherry pick assemblies to check
+            List<Assembly> assemblies = new List<Assembly>();
+            var allAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+            if (assemblyLoadingBehavior == AssemblyLoadingBehavior.All)
             {
+                assemblies.AddRange(allAssemblies);
+            }
+            else
+            {
+                for (int i = 0; i < allAssemblies.Length; i++)
+                {
+                    var _name = allAssemblies[i].GetName().Name;
+
+                    if (_name == "Assembly-CSharp")
+                    {
+                        assemblies.Add(allAssemblies[i]);
+                    }
+                    else if (additionalAssembliesToLoad.Contains(_name))
+                    {
+                        assemblies.Add(allAssemblies[i]);
+                    }
+                }
+
+                assemblies.Add(Assembly.GetExecutingAssembly());
+            }
+
+            foreach (var assembly in assemblies)
+            {
+                //Debug.Log($"Reading assembly \"{assembly.GetName().Name}\"");
+
                 foreach (var type in assembly.GetTypes())
                 {
                     foreach (var method in type.GetMethods(method_flags))

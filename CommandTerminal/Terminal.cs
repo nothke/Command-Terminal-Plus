@@ -53,6 +53,10 @@ namespace CommandTerminalPlus
         [SerializeField] Color WarningColor       = Color.yellow;
         [SerializeField] Color ErrorColor         = Color.red;
 
+        [Header("Assembly Loading")]
+        [SerializeField] AssemblyLoadingBehavior assemblyLoadingBehavior;
+        [SerializeField] string[] customAdditionalAssembliesToLoad;
+
         TerminalState state;
         TextEditor editor_state;
         bool input_fix;
@@ -200,7 +204,8 @@ namespace CommandTerminalPlus
             SetupInput();
             SetupLabels();
 
-            Shell.RegisterCommandsAndVariables();
+            HashSet<string> additionalAssemblies = new HashSet<string>(customAdditionalAssembliesToLoad);
+            Shell.RegisterCommandsAndVariables(assemblyLoadingBehavior, additionalAssemblies);
 
             if (IssuedError) {
                 Log(TerminalLogType.Error, "Error: {0}", Shell.IssuedErrorMessage);
