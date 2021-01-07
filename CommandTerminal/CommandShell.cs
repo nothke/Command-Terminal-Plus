@@ -385,9 +385,9 @@ namespace CommandTerminalPlus
 
             int endIndex = -1;
             bool mutliWord = false;
-            if(argumentGroupMarkers.ContainsKey(s[0]))
+            if(argumentGroupMarkers.TryGetValue(s[0], out char endChar))
             {
-                endIndex = s.IndexOf(argumentGroupMarkers[s[0]], 1);
+                endIndex = s.IndexOf(endChar, 1);
                 mutliWord = true;
             }
             else
