@@ -372,13 +372,32 @@ namespace CommandTerminalPlus
             };
         }
 
+        static Dictionary<char, char> argumentGroupMarkers = new Dictionary<char, char>
+        {
+            {'\'', '\''},
+            {'"', '"'},
+            {'<', '>'},
+            {'[', ']'}
+        };
+        
         CommandArg EatArgument(ref string s) {
             var arg = new CommandArg();
-            int space_index = s.IndexOf(' ');
 
-            if (space_index >= 0) {
-                arg.String = s.Substring(0, space_index);
-                s = s.Substring(space_index + 1); // Remaining
+            int endIndex = -1;
+            bool mutliWord = false;
+            if(argumentGroupMarkers.ContainsKey(s[0]))
+            {
+                endIndex = s.IndexOf(argumentGroupMarkers[s[0]], 1);
+                mutliWord = true;
+            }
+            else
+            {
+                endIndex = s.IndexOf(' ');
+            }
+
+            if (endIndex >= 0) {
+                arg.String = s.Substring(mutliWord ? 1 : 0, mutliWord ? endIndex - 1 : endIndex);
+                s = s.Substring(endIndex + 1); // Remaining
             } else {
                 arg.String = s;
                 s = "";
