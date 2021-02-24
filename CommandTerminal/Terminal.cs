@@ -75,6 +75,9 @@ namespace CommandTerminalPlus
         Texture2D background_texture;
         Texture2D input_background_texture;
 
+        Event toggleEvent;
+        Event toggleFullEvent;
+
         public static void BottomOutScrollbar() => Instance.scroll_position.y = int.MaxValue;
 
         public static TerminalLog Buffer { get; private set; }
@@ -181,6 +184,9 @@ namespace CommandTerminalPlus
 
             // Hook Unity log events
             Application.logMessageReceived += HandleUnityLog;
+
+            toggleEvent = Event.KeyboardEvent(ToggleHotkey);
+            toggleFullEvent = Event.KeyboardEvent(ToggleFullHotkey);
         }
 
         void OnDisable() {
@@ -220,10 +226,10 @@ namespace CommandTerminalPlus
         }
 
         void OnGUI() {
-            if (Event.current.Equals(Event.KeyboardEvent(ToggleHotkey))) {
+            if (Event.current.Equals(toggleEvent)) {
                 SetState(TerminalState.OpenSmall);
                 initial_open = true;
-            } else if (Event.current.Equals(Event.KeyboardEvent(ToggleFullHotkey))) {
+            } else if (Event.current.Equals(toggleFullEvent)) {
                 SetState(TerminalState.OpenFull);
                 initial_open = true;
             }
