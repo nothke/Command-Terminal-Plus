@@ -67,8 +67,7 @@ namespace CommandTerminalPlus
             else
             {
                 TypeError(typeof(T).FullName);
-                    throw new Exception($"value {String} not found in enumerated type {typeof(T).FullName}");
-                return default;
+                throw new Exception($"value {String} not found in enumerated type {typeof(T).FullName}");
             }
         }
 
