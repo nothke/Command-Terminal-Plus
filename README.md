@@ -1,10 +1,3 @@
-## Update 2019-08-30
-
-I will no longer be maintaining Command Terminal Plus. In my personal projects, I have replaced it with a frontend for [LICC](http://licc.software) called Fancy Pants Console. You can see FPC in action [here](https://www.youtube.com/watch?v=QDp5wE1Se6o). I do plan on open sourcing FPC eventually, but it relies on a lot of custom UI code so that will happen after we open source our custom UI library.
-
-If you would like to take ownership of this repo, hit me up.
-
-
 Command Terminal Plus
 ======================
 
@@ -34,3 +27,8 @@ This is a fork of [stillwwater/command_terminal](https://github.com/stillwwater/
 * tweaked some variable names to be more self-explanatory
 * fixed default commands having the incorrect names in WebGL
 * generally improved a bunch of code
+
+Nothke's changes:
+* Added an option to manually select which assemblies to load. The terminal was loading all assemblies (asmdefs, which includes packages) by default, and projects that have a large amount of assemblies would take a long time to start up (5+ seconds in my project)
+* Moved OnGUI method into a separate TerminalDrawer component to eliminate GC allocations when terminal is closed
+* Merged [@Wokaroi's](https://github.com/Wokarol) addition of multiword arguments
