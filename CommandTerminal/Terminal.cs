@@ -37,7 +37,7 @@ namespace CommandTerminalPlus
         [SerializeField] Font ConsoleFont;
         [SerializeField] int ConsoleFontSize;
         [SerializeField] string InputCaret        = ">";
-        [SerializeField] bool ShowGUIButtons;
+        [SerializeField] public bool ShowGUIButtons;
         [SerializeField] bool RightAlignButtons;
 
         [Header("Theme")]
@@ -75,15 +75,16 @@ namespace CommandTerminalPlus
         Texture2D background_texture;
         Texture2D input_background_texture;
 
-        Event toggleEvent;
-        Event toggleFullEvent;
-
         public static void BottomOutScrollbar() => Instance.scroll_position.y = int.MaxValue;
+
+        private static Terminal Instance;
 
         public static TerminalLog Buffer { get; private set; }
         public static CommandShell Shell { get; private set; }
         public static TerminalHistory History { get; private set; }
         public static TerminalAutocomplete Autocomplete { get; private set; }
+
+        TerminalDrawer drawer;
 
         public static bool IssuedError {
             get { return Shell.IssuedErrorMessage != null; }
@@ -129,6 +130,12 @@ namespace CommandTerminalPlus
         public static event System.Action WhenTerminalOpens;
         public static event System.Action WhenTerminalCloses;
 
+        public void Open(bool full)
+        {
+            SetState(full ? TerminalState.OpenFull : TerminalState.OpenSmall);
+            initial_open = true;
+            drawer.enabled = true;
+        }
 
         public void SetState(TerminalState new_state) {
             input_fix = true;
@@ -176,7 +183,18 @@ namespace CommandTerminalPlus
             }
         }
 
+        private void Awake()
+        {
+            Instance = this;
+        }
+
         void OnEnable() {
+
+            drawer = GetComponent<TerminalDrawer>();
+            if (!drawer)
+                drawer = gameObject.AddComponent<TerminalDrawer>();
+            drawer.terminal = this;
+
             Buffer = new TerminalLog(BufferSize);
             Shell = new CommandShell();
             History = new TerminalHistory();
@@ -184,9 +202,6 @@ namespace CommandTerminalPlus
 
             // Hook Unity log events
             Application.logMessageReceived += HandleUnityLog;
-
-            toggleEvent = Event.KeyboardEvent(ToggleHotkey);
-            toggleFullEvent = Event.KeyboardEvent(ToggleFullHotkey);
         }
 
         void OnDisable() {
@@ -223,27 +238,9 @@ namespace CommandTerminalPlus
             }
 
             RunStartupCommands();
-        }
 
-        void OnGUI() {
-            if (Event.current.Equals(toggleEvent)) {
-                SetState(TerminalState.OpenSmall);
-                initial_open = true;
-            } else if (Event.current.Equals(toggleFullEvent)) {
-                SetState(TerminalState.OpenFull);
-                initial_open = true;
-            }
-
-            if (ShowGUIButtons) {
-                DrawGUIButtons();
-            }
-
-            if (IsClosed) {
-                return;
-            }
-
-            HandleOpenness();
-            window = GUILayout.Window(88, window, DrawConsole, "", window_style);
+            // Disable drawer on start
+            drawer.enabled = false;
         }
 
         void SetupWindow() {
@@ -357,7 +354,7 @@ namespace CommandTerminalPlus
             }
         }
 
-        void DrawGUIButtons() {
+        public void DrawGUIButtons() {
             int size = ConsoleFont.fontSize;
             float x_position = RightAlignButtons ? Screen.width - 7 * size : 0;
 
@@ -376,7 +373,7 @@ namespace CommandTerminalPlus
             GUILayout.EndArea();
         }
 
-        void HandleOpenness() {
+        public void HandleOpenness() {
             float dt = ToggleSpeed * Time.unscaledDeltaTime;
 
             if (current_open_t < open_target) {
@@ -393,6 +390,11 @@ namespace CommandTerminalPlus
             }
 
             window = new Rect(0, current_open_t - real_window_size, Screen.width, real_window_size);
+        }
+
+        public void DrawWindow()
+        {
+            window = GUILayout.Window(88, window, DrawConsole, "", window_style);
         }
 
         void EnterCommand() {
@@ -472,6 +474,13 @@ namespace CommandTerminalPlus
 
         private void Update()
         {
+            // Read keys
+            if (Input.GetKeyDown(ToggleHotkey))
+                Open(false);
+            else if ((Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift)) 
+                && Input.GetKeyDown(ToggleHotkey))
+                Open(true);
+
             foreach (var v in BoundCommands)
                 if (Input.GetKeyDown(v.Key))
                     foreach(var c in v.Value)
@@ -503,11 +512,6 @@ namespace CommandTerminalPlus
             }
         }
 
-        private static Terminal Instance;
-        private void Awake()
-        {
-            Instance = this;
-        }
 
         private static IEnumerator RunCommandAfterDelayRoutine(float seconds, string command, bool scaledTime)
         {
