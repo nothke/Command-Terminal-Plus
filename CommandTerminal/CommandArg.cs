@@ -44,6 +44,9 @@ namespace CommandTerminalPlus
         {
             get
             {
+                if (float.TryParse(String, out float f))
+                    return f != 0;
+
                 if (TrueStrings.Contains(String.ToLower()))
                     return true;
 
